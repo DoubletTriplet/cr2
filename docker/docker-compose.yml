@@ -1,0 +1,32 @@
+version: "3"
+services:
+
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: uvicorn tsc.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+    volumes:
+      - ../:/app
+    environment:
+      TSC_MONGODB_USER: tsc
+      TSC_MONGODB_HOST: mongo
+      TSC_MONGODB_PASSWORD: secret
+      TSC_MONGODB_DATABASE: tsc_db
+      TSC_MONGODB_PORT: 27017
+      TSC_MONGODB_COLLECTION: words
+      TSC_DEBUG: true
+
+  mongo:
+    image: "mongo"
+    ports:
+      - "27017:27017"
+    command: mongod
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: tsc
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_DATABASE: tsc_db
